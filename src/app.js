@@ -54,33 +54,109 @@ dateInput.addEventListener("input", () => {
   }
 });
 
+let participantId = 0;
+
+function updateParticipantsCounter() {
+  const count = participantsList.children.length;
+  if (count > 1) {
+    participantsCounter.textContent = count + "participants";
+  } else {
+    participantsCounter.textContent = count + "participant";
+  }
+}
+
 function addParticipants() {
+  if (participantsList.children.length >= maxParticipants) {
+    participantsErreur.classList.remove("hidden");
+    participantsErreur.textContent =
+      "Vous ne pouvez pas ajouter plus de 20 participants.";
+    return;
+  }
   const li = document.createElement("li");
   const input = document.createElement("input");
   const removeBtn = document.createElement("button");
+  const error = document.createElement("p");
+
+  participantId++;
 
   input.type = "text";
   input.name = "participants[]";
   input.placeholder = "Prénom du participant";
   input.required = true;
+  input.classList.add("border");
+
+  error.id = `participant-erreur-${participantId}`; /*<p id="participant-erreur-1"></p>*/
+  error.classList.add("hidden", "text-sm", "text-daret-erreur");
+
+  input.setAttribute("aria-describedby", error.id);
 
   removeBtn.type = "button";
   removeBtn.textContent = "Retirer";
+  removeBtn.classList.add("remove-participant");
 
   li.appendChild(input);
   li.appendChild(removeBtn);
+  li.appendChild(error);
   participantsList.appendChild(li);
+
+  participantsErreur.textContent = "";
+  participantsErreur.classList.add("hidden");
+
+  updateParticipantsCounter();
 }
 
+function validateParticipants() {
+  const participants = participantsList.children;
+  let firstInvalidInput = null;
+
+  for (let i = 0; i < participants.length; i++) {
+    const input = participants[i].children[0];
+    const error = participants[i].children[2];
+    const value = input.value.trim();
+
+    if (value.length < 2 || value.length > 30) {
+      error.textContent = "Le prénom doit contenir entre 2 et 30 caractères.";
+
+      error.classList.remove("hidden");
+      input.setAttribute("aria-invalid", "true");
+
+      if (firstInvalidInput === null) {
+        firstInvalidInput = input;
+      }
+    } else {
+      error.textContent = "";
+      error.classList.add("hidden");
+      input.removeAttribute("aria-invalid");
+    }
+  }
+
+  return firstInvalidInput;
+}
+
+participantsBtn.addEventListener("click", () => {
+  addParticipants();
+});
+participantsList.addEventListener("input", () => {
+  validateParticipants();
+});
+
 participantsList.addEventListener("click", (e) => {
-  if (e.target.textContent == "Retirer" ) {
+  if (e.target.classList.contains("remove-participant")) {
     if (participantsList.children.length > minParticipants) {
       e.target.parentElement.remove();
+
+      participantsErreur.textContent = "";
+      participantsErreur.classList.add("hidden");
+
+      updateParticipantsCounter();
+      validateParticipants();
+    } else {
+      participantsErreur.classList.remove("hidden");
+      participantsErreur.textContent =
+        "Il faut garder au moins 2 participants.";
     }
   }
 });
-
-addParticipants();
-addParticipants();
-addParticipants();
-
+for (let i = 0; i < 3; i++) {
+  addParticipants();
+}
