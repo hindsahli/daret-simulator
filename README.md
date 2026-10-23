@@ -1,63 +1,159 @@
-# Daret — simulateur de cercle d'épargne
+# Daret — Simulateur de cercle d’épargne
 
-> Projet pédagogique YouCode. **Simulation** : aucun argent réel, aucun paiement, aucun compte, des prénoms fictifs uniquement.
+## Présentation du projet
 
-_À compléter par toi : remplace cette introduction par la description de **ton** projet._
+Daret est une application web monopage qui permet de simuler un cercle d’épargne, un système traditionnel dans lequel plusieurs participants versent régulièrement la même somme d’argent. À chaque tour, un participant reçoit la totalité de la cagnotte, jusqu’à ce que chaque membre ait reçu son tour.
 
-## Liens
+L’objectif du projet est de remplacer la gestion manuelle d’une daret par un outil simple permettant de configurer un cercle, de gérer ses participants et de générer un calendrier des tours.
 
-- Site (GitHub Pages) : _à compléter_
-- Tableau GitHub Projects : _à compléter_
-- Maquette Figma : _à compléter_
+## Objectifs pédagogiques
 
-## Installation
+- Manipuler le DOM avec JavaScript.
+- Créer, modifier et supprimer des éléments HTML dynamiquement.
+- Gérer les événements utilisateur avec `addEventListener`.
+- Utiliser la délégation d’événements.
+- Valider les formulaires et afficher des messages d’erreur accessibles.
+- Organiser le code avec des fonctions réutilisables et des fonctions pures pour les calculs.
+- Utiliser Git et GitHub pour gérer les branches, les commits et les Pull Requests.
 
-```bash
-npm install
-npm run build     # construit assets/style.css
-npm run dev       # reconstruit le CSS à chaque modification
+## Technologies utilisées
+
+- HTML5
+- Tailwind CSS
+- JavaScript
+- Git et GitHub
+
+Aucun framework JavaScript ni aucune bibliothèque externe de dates ne sont nécessaires.
+
+## Fonctionnalités
+
+### US-01 — Paramétrer un cercle
+
+- Saisir le nom du cercle.
+- Définir la cotisation par tour en MAD.
+- Choisir la périodicité : hebdomadaire, tous les 15 jours ou mensuelle.
+- Définir la date de début.
+- Valider les champs avec JavaScript et afficher des messages d’erreur.
+
+### US-02 — Gérer les participants
+
+- Afficher trois champs de participants au démarrage.
+- Ajouter des participants, jusqu’à un maximum de 20.
+- Retirer des participants, avec un minimum de 2.
+- Mettre à jour automatiquement le compteur de participants.
+- Utiliser la délégation d’événements pour gérer les boutons « Retirer ».
+- Vérifier que chaque prénom contient entre 2 et 30 caractères.
+
+### US-03 — Calculer le cercle
+
+**En cours de développement.**
+
+Cette fonctionnalité doit calculer et afficher :
+
+- Le montant reçu par chaque bénéficiaire.
+- Le total versé par chaque participant sur l’ensemble du cycle.
+- Le nombre total de tours.
+- La date du premier et du dernier tour.
+
+Les calculs seront effectués dans des fonctions pures, indépendantes du DOM.
+
+### Fonctionnalités prévues
+
+- **US-04 :** Générer le calendrier des tours.
+- **US-05 :** Choisir l’ordre des bénéficiaires ou tirer cet ordre au sort.
+- **US-06 :** Suivre les tours terminés et le prochain tour.
+- **US-07 :** Afficher le détail d’un tour dans une fenêtre de dialogue.
+- **US-08 :** Réinitialiser le simulateur.
+
+## Installation et lancement
+
+1. Cloner le dépôt :
+
+   ```bash
+   git clone https://github.com/hindsahli/daret-simulator.git
+   ```
+
+2. Accéder au projet :
+
+   ```bash
+   cd daret-simulator
+   ```
+
+3. Installer les dépendances :
+
+   ```bash
+   npm install
+   ```
+
+4. Lancer le projet avec la commande prévue dans `package.json`.
+
+   Vérifier les scripts disponibles avec :
+
+   ```bash
+   npm run
+   ```
+
+   Si le projet utilise un script `dev`, lancer :
+
+   ```bash
+   npm run dev
+   ```
+
+## Structure du projet
+
+```text
+daret-simulator/
+├── assets/
+│   └── style.css
+├── src/
+│   ├── app.js
+│   └── input.css
+├── index.html
+├── package.json
+├── package-lock.json
+└── README.md
 ```
 
-Ouvre ensuite `index.html` dans le navigateur (ou avec une extension « Live Server »).
+Le fichier `index.html` contient la structure de l’interface. Le fichier `src/app.js` gère les interactions, les validations et les calculs du simulateur.
 
-## Ce qui est fourni, ce que tu fais
+## Workflow Git
 
-| Fourni | À faire |
-| --- | --- |
-| `index.html` (intégré avec Tailwind), `src/input.css` (design tokens, classes d'état) | `src/app.js` : tout le JavaScript |
+Le développement est organisé autour d’une branche par User Story.
 
-## Repères du HTML
+Exemple :
 
-| Besoin | Où |
-| --- | --- |
-| Formulaire | `#daret-form` (`novalidate`) |
-| Champs et messages d'erreur | `#nom-cercle` / `#nom-cercle-erreur`, `#cotisation` / `#cotisation-erreur`, `#periodicite` / `#periodicite-erreur`, `#date-debut` / `#date-debut-erreur` |
-| Participants | `#participants-liste` (`data-min`, `data-max`), `#participants-compteur`, `#participants-erreur`, `#ajouter-participant` |
-| Boutons | `#generer` (envoi), `#reinitialiser`, `#tirage-au-sort`, `#ordre-saisie` |
-| État vide / résultat | `#etat-vide`, `#contenu-resultat` (caché par défaut avec la classe `hidden`), titre `#titre-resultat` |
-| Résumé | `#resume-cagnotte`, `#resume-total-cycle`, `#resume-nb-tours`, `#resume-dates` |
-| Calendrier | `#calendrier-corps` (les `<tr>` sont à créer), `#compteur-tours` (`aria-live`) |
-| Fenêtre de détail | `#detail-tour` (`<dialog>`), `#detail-titre`, `#detail-date`, `#detail-beneficiaire`, `#detail-montant`, `#detail-contributeurs`, `#detail-fermer` |
+```bash
+git switch main
+git pull origin main
+git switch -c feature/us-03
+```
 
-Conventions conseillées pour les lignes que tu crées : `data-tour` sur chaque `<tr>`, `data-action="ouvrir-detail"` et `data-action="basculer-statut"` sur les boutons.
+Les commits suivent la convention Conventional Commits :
 
-Classes d'état prêtes dans `src/input.css` : `champ-invalide`, `ligne-terminee`, `prochain-tour` (à ajouter / retirer avec `classList`).
+```text
+feat: add participant management
+fix: correct form validation
+docs: update project README
+refactor: simplify calculation functions
+```
 
-## Fonctionnalités réalisées
+Chaque fonctionnalité est proposée dans une Pull Request avant son intégration dans la branche principale.
 
-_À compléter : liste des user stories (US-01 à US-08) réalisées._
+## État d’avancement
 
-## Jeu d'essai
+- [x] US-01 — Paramétrage du cercle
+- [x] US-02 — Ajout et retrait des participants
+- [ ] US-03 — Calcul du cercle
+- [ ] US-04 — Génération du calendrier
+- [ ] US-05 — Choix de l’ordre des tours
+- [ ] US-06 — Suivi de l’avancement
+- [ ] US-07 — Détail d’un tour
+- [ ] US-08 — Réinitialisation
 
-| # | Donnée saisie | Résultat attendu | Résultat obtenu | Validé |
-| --- | --- | --- | --- | --- |
-| 1 | _à compléter (au moins 10 cas : valides, invalides, limites)_ | | | |
+*Les fonctionnalités cochées correspondent à l’avancement du développement ; leur conformité complète au cahier des charges reste à vérifier.*
 
-## Difficultés rencontrées
+## Auteur
 
-_À compléter : liens vers tes issues de bug._
+Projet individuel réalisé dans le cadre d’un exercice pédagogique de développement web JavaScript.
 
-## Captures d'écran
-
-_À compléter : mobile et desktop._
-# daret-simulator
+Dépôt GitHub : https://github.com/hindsahli/daret-simulator
