@@ -5,6 +5,7 @@ const nameInput = document.getElementById("nom-cercle");
 let nameErreurMssg = document.getElementById("nom-cercle-erreur");
 const cotisationInput = document.getElementById("cotisation");
 let cotisationInputErreur = document.getElementById("cotisation-erreur");
+const periodicite = document.getElementById("periodicite");
 const today = new Date();
 const dateInput = document.getElementById("date-debut");
 let dateInputErreur = document.getElementById("date-debut-erreur");
@@ -15,6 +16,10 @@ const participantsBtn = document.getElementById("ajouter-participant");
 const participantsErreur = document.getElementById("participants-erreur");
 const minParticipants = Number(participantsList.dataset.min);
 const maxParticipants = Number(participantsList.dataset.max);
+const genererBtn = document.getElementById("generer");
+const calendrier = document.getElementById("contenu-resultat");
+const etatVide = document.getElementById("etat-vide");
+const totNbTours = document.getElementById("resume-nb-tours");
 
 nameInput.addEventListener("input", () => {
   if (
@@ -160,3 +165,59 @@ participantsList.addEventListener("click", (e) => {
 for (let i = 0; i < 3; i++) {
   addParticipants();
 }
+
+function checkPeriod(periodicite) {
+  let [year, month, day] = dateInput.value.split("-").map(Number);
+  let date = [year, month, day];
+
+  const nbParticipants = participantsList.children.length;
+  let toursRestants = nbParticipants - 1;
+
+  while (toursRestants > 0) {
+    switch (periodicite) {
+      case "hebdomadaire":
+        day += 7 * nbParticipants;
+        break;
+      case "quinzaine":
+        day += 14 * nbParticipants;
+        break;
+      case "mensuelle":
+        month++;
+        break;
+    }
+    while (day > new Date(year, month, 0).getDate()) {
+      /*gives the last day of the last month : new Date(year, month, 0).getDate()*/
+      day -= new Date(year, month, 0).getDate(); /*getDate gets you the date of that day*/
+      month++;
+    }
+    if (month == 13) {
+      month = 1;
+      year++;
+    }
+    toursRestants--;
+  }
+
+  return [year, month, day];
+}
+
+genererBtn.addEventListener("click", (e) => {
+  e.preventDefault(); /*it removes the default of the btn , the btn refreshes the page , by this it doesnt*/
+  const totParMoit = document.getElementById("resume-cagnotte");
+  const totParCycle = document.getElementById("resume-total-cycle");
+  const ResumeDates = document.getElementById("resume-dates");
+
+  calendrier.classList.remove("hidden");
+  etatVide.classList.add("hidden");
+
+  totParMoit.textContent = cotisationInput.value;
+  totParCycle.textContent = cotisationInput.value;
+  totNbTours.textContent = participantsList.children.length;
+  const periodicite = document.getElementById("periodicite").value;
+  const [year, month, day] = checkPeriod(periodicite);
+
+  const dateDebut = dateInput.value;
+  const dateDernierTour = day + "-" + month + "-" + year;
+  ResumeDates.classList.remove("text-xl");
+  ResumeDates.classList.add("text-sm");
+  ResumeDates.innerHTML = ` Debut : ${dateDebut} <br> Fin : ${dateDernierTour}`; /*innerHTML lets you read or change the content of an HTML element, including HTML tags.*/
+});
