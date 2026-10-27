@@ -187,7 +187,11 @@ function checkPeriod(periodicite) {
     }
     while (day > new Date(year, month, 0).getDate()) {
       /*gives the last day of the last month : new Date(year, month, 0).getDate()*/
-      day -= new Date(year, month, 0).getDate(); /*getDate gets you the date of that day*/
+      day -= new Date(
+        year,
+        month,
+        0,
+      ).getDate(); /*getDate gets you the date of that day*/
       month++;
     }
     if (month == 13) {
@@ -198,6 +202,106 @@ function checkPeriod(periodicite) {
   }
 
   return [year, month, day];
+}
+
+function getNextDate(year, month, day, periodicite) {
+  switch (periodicite) {
+    case "hebdomadaire":
+      day += 7;
+      break;
+
+    case "quinzaine":
+      day += 14;
+      break;
+
+    case "mensuelle":
+      month++;
+      break;
+  }
+
+  while (day > new Date(year, month, 0).getDate()) {
+    day -= new Date(year, month, 0).getDate();
+    month++;
+  }
+
+  while (month > 12) {
+    month -= 12;
+    year++;
+  }
+
+  return [year, month, day];
+}
+
+function formatDate(year, month, day) {
+  const date = new Date(
+    year,
+    month - 1,
+    day,
+  ); /*js months are from 0 to 11 thats why we added -1*/
+
+  return date.toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+function generateCalendrier() {
+  console.log("Function called");
+  const tableBody = document.getElementById("calendrier-corps");
+  const nbParticipants = participantsList.children.length;
+  let [year, month, day] = dateInput.value.split("-").map(Number);
+  const periodicite = document.getElementById("periodicite").value;
+  const montantRecu = Number(cotisationInput.value) * nbParticipants;
+
+  tableBody.innerHTML = "";
+
+  for (let i = 0; i < nbParticipants; i++) {
+    const row = document.createElement("tr");
+    const input = participantsList.children[i].children[0];
+    const nomParticipant = input.value.trim();
+    for (let j = 0; j < 6; j++) {
+      const cell = document.createElement("td");
+      switch (j) {
+        case 0:
+          cell.textContent = i + 1;
+          cell.classList.add("text-center")
+          break;
+        case 1:
+          cell.textContent = formatDate(year, month, day);
+          cell.classList.add("text-center")
+          break;
+        case 2:
+          cell.textContent = nomParticipant;
+          cell.classList.add("text-center")
+          break;
+        case 3:
+          cell.textContent = `${montantRecu} MAD`;
+          cell.classList.add("text-center")
+          break;
+        case 4:
+          cell.textContent = "À venir";
+          cell.classList.add("border");
+          cell.classList.add("text-center")   
+          cell.style.cursor = "pointer";
+
+          cell.addEventListener("click", () => {
+            if (cell.textContent === "À venir") {
+              cell.textContent = "Terminé";
+              row.classList.add("ligne-terminee");
+            } else {
+              cell.textContent = "À venir";
+              row.classList.remove("ligne-terminee");
+            }
+          });
+          break;
+      }
+
+      row.appendChild(cell);
+    }
+    tableBody.appendChild(row);
+    [year, month, day] = getNextDate(year, month, day, periodicite);
+  }
 }
 
 genererBtn.addEventListener("click", (e) => {
@@ -220,4 +324,6 @@ genererBtn.addEventListener("click", (e) => {
   ResumeDates.classList.remove("text-xl");
   ResumeDates.classList.add("text-sm");
   ResumeDates.innerHTML = ` Debut : ${dateDebut} <br> Fin : ${dateDernierTour}`; /*innerHTML lets you read or change the content of an HTML element, including HTML tags.*/
+
+  generateCalendrier();
 });
